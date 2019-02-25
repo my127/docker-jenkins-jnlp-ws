@@ -11,12 +11,13 @@ RUN echo 'APT::Install-Recommends 0;' >> /etc/apt/apt.conf.d/01norecommends \
  && DEBIAN_FRONTEND=noninteractive apt-get -qq -y --no-install-recommends install \
    apt-transport-https \
    git \
+   awscli \
  && apt-get auto-remove -qq -y \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 # install my127/workspace
-RUN curl -L -o ws https://github.com/my127/workspace/releases/download/0.1.0-beta.5/ws \
+RUN curl -L -o ws https://github.com/my127/workspace/releases/download/0.1.0-beta.6/ws \
  && chmod +x ws \
  && mv ws /usr/local/bin/ws
 
