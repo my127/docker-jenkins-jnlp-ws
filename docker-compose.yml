@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  v0.1.x:
-    image: my127/workspace:v0.1.x
+  v0.1:
+    image: my127/workspace:0.1
     build:
       context: .
       args:
