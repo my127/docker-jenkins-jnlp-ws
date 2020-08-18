@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  v0.1.x:
+    image: my127/workspace:v0.1.x
+    build:
+      context: .
+      args:
+        WS_VERSION: 0.1.3

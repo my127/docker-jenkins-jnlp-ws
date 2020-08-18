@@ -1,31 +1,19 @@
-FROM php:7.2-cli-stretch
+FROM php:7.4-cli-alpine
+ARG WS_VERSION
+ARG HELM_VERSION=2.16.7
 
-# apply updates and install package depdendencies
-RUN echo 'APT::Install-Recommends 0;' >> /etc/apt/apt.conf.d/01norecommends \
- && echo 'APT::Install-Suggests 0;' >> /etc/apt/apt.conf.d/01norecommends \
- && apt-get update -qq \
- && DEBIAN_FRONTEND=noninteractive apt-get -s dist-upgrade | grep "^Inst" | \
-      grep -i securi | awk -F " " '{print $2}' | \
-      xargs apt-get -qq -y --no-install-recommends install \
- \
- && DEBIAN_FRONTEND=noninteractive apt-get -qq -y --no-install-recommends install \
-   apt-transport-https \
-   git \
-   awscli \
- && apt-get auto-remove -qq -y \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache aws-cli docker-cli bash docker-compose git openssh-client jq rsync
 
-# install my127/workspace
-RUN curl -L -o ws https://github.com/my127/workspace/releases/download/0.1.3/ws \
- && chmod +x ws \
- && mv ws /usr/local/bin/ws
+RUN set -ex \
+    # helm (for helm chart verification only)
+    && wget -O helm.tar.gz "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" \
+    && tar -C /usr/local/bin --strip-components=1 -zxvf helm.tar.gz "linux-amd64/helm" \
+    && rm ./helm.tar.gz \
+    # kubeseal (development only)
+    && wget -O /usr/local/bin/kubeseal https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.12.5/kubeseal-linux-amd64 \
+    && chmod +x /usr/local/bin/kubeseal \
+    # workspace
+    && wget -O /usr/local/bin/ws "https://github.com/my127/workspace/releases/download/${WS_VERSION}/ws" \
+    && chmod +x /usr/local/bin/ws
 
-# install docker client binary
-RUN curl -L -o docker-18.09.2.tgz https://download.docker.com/linux/static/stable/x86_64/docker-18.09.2.tgz \
-  && tar -vzxf docker-18.09.2.tgz --strip=1 docker/docker \
-  && rm -f docker-18.09.2.tgz \
-  && mv docker /usr/local/bin/docker
-
-# initialise ws utility
-RUN ws
+ENTRYPOINT [ "/usr/local/bin/ws" ]
