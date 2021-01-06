@@ -1,6 +1,6 @@
 FROM php:7.4-cli-alpine
 ARG WS_VERSION
-ARG HELM_VERSION=2.16.7
+ARG HELM_VERSION=2.17.0
 
 RUN apk add --no-cache aws-cli docker-cli bash docker-compose git openssh-client jq rsync
 
