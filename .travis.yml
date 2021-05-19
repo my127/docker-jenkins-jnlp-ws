@@ -1,0 +1,14 @@
+language: bash
+
+services:
+  - docker
+
+script:
+  - set -e
+  - docker-compose build
+
+after_success:
+  - |
+    if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] ; then
+      docker-compose push
+    fi
